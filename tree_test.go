@@ -6,17 +6,19 @@ import (
 	"testing"
 )
 
-func dummyHandler(w http.ResponseWriter, r *http.Request) {
+func _dummyHandler(w http.ResponseWriter, r *http.Request) {
 
 }
+
+var dummyHandler = http.HandlerFunc(_dummyHandler)
 
 func addPath(t *testing.T, tree *node, path string) {
 	t.Logf("Adding path %s", path)
 	n := tree.addPath(path[1:], nil, false)
-	handler := func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		urlParams := ContextParams(r.Context())
 		urlParams["path"] = path
-	}
+	})
 	n.setHandler("GET", handler, false)
 }
 
@@ -57,7 +59,7 @@ func testPath(t *testing.T, tree *node, path string, expectPath string, expected
 	}
 
 	pathMap := make(map[string]string)
-	handler(nil, (&http.Request{}).WithContext(AddParamsToContext(context.Background(), pathMap)))
+	handler.ServeHTTP(nil, (&http.Request{}).WithContext(AddParamsToContext(context.Background(), pathMap)))
 	matchedPath := pathMap["path"]
 
 	if matchedPath != expectPath {
@@ -234,7 +236,7 @@ func TestTree(t *testing.T) {
 		handler, ok := n.leafHandler["GET"]
 		matchPath := ""
 		if ok {
-			handler(nil, (&http.Request{}).WithContext(AddParamsToContext(context.Background(), params)))
+			handler.ServeHTTP(nil, (&http.Request{}).WithContext(AddParamsToContext(context.Background(), params)))
 			matchPath = params["path"]
 		}
 
@@ -312,7 +314,7 @@ func BenchmarkTreeNullRequest(b *testing.B) {
 	b.ReportAllocs()
 	tree := &node{
 		path: "/",
-		leafHandler: map[string]http.HandlerFunc{
+		leafHandler: map[string]http.Handler{
 			"GET": dummyHandler,
 		},
 	}
@@ -327,7 +329,7 @@ func BenchmarkTreeOneStatic(b *testing.B) {
 	b.ReportAllocs()
 	tree := &node{
 		path: "/",
-		leafHandler: map[string]http.HandlerFunc{
+		leafHandler: map[string]http.Handler{
 			"GET": dummyHandler,
 		},
 	}
@@ -342,7 +344,7 @@ func BenchmarkTreeOneStatic(b *testing.B) {
 func BenchmarkTreeOneParam(b *testing.B) {
 	tree := &node{
 		path: "/",
-		leafHandler: map[string]http.HandlerFunc{
+		leafHandler: map[string]http.Handler{
 			"GET": dummyHandler,
 		},
 	}
@@ -358,7 +360,7 @@ func BenchmarkTreeOneParam(b *testing.B) {
 func BenchmarkTreeLongParams(b *testing.B) {
 	tree := &node{
 		path: "/",
-		leafHandler: map[string]http.HandlerFunc{
+		leafHandler: map[string]http.Handler{
 			"GET": dummyHandler,
 		},
 	}

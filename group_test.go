@@ -14,13 +14,13 @@ func TestEmptyGroupAndMapping(t *testing.T) {
 			t.Error(`Expected NewGroup("")`)
 		}
 	}()
-	New().Get("", func(w http.ResponseWriter, _ *http.Request) {})
+	New().Get("", http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {}))
 }
 func TestSubGroupSlashMapping(t *testing.T) {
 	r := New()
-	r.NewGroup("/foo").Get("/", func(w http.ResponseWriter, _ *http.Request) {
+	r.NewGroup("/foo").Get("/", http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(200)
-	})
+	}))
 
 	var req *http.Request
 	var recorder *httptest.ResponseRecorder
@@ -42,9 +42,9 @@ func TestSubGroupSlashMapping(t *testing.T) {
 
 func TestSubGroupEmptyMapping(t *testing.T) {
 	r := New()
-	r.NewGroup("/foo").Get("", func(w http.ResponseWriter, _ *http.Request) {
+	r.NewGroup("/foo").Get("", http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(200)
-	})
+	}))
 	req, _ := http.NewRequest("GET", "/foo", nil)
 	recorder := httptest.NewRecorder()
 	r.ServeHTTP(recorder, req)

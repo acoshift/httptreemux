@@ -15,11 +15,11 @@ type TreeMux struct {
 	PanicHandler PanicHandler
 
 	// The default NotFoundHandler is http.NotFound.
-	NotFoundHandler func(w http.ResponseWriter, r *http.Request)
+	NotFoundHandler http.Handler
 
 	// Any OPTIONS request that matches a path without its own OPTIONS handler will use this handler,
 	// if set, instead of calling MethodNotAllowedHandler.
-	OptionsHandler http.HandlerFunc
+	OptionsHandler http.Handler
 
 	// MethodNotAllowedHandler is called when a pattern matches, but that
 	// pattern does not have a handler for the requested method. The default
@@ -28,7 +28,7 @@ type TreeMux struct {
 	// The methods parameter contains the map of each method to the corresponding
 	// handler function.
 	MethodNotAllowedHandler func(w http.ResponseWriter, r *http.Request,
-		methods map[string]http.HandlerFunc)
+		methods map[string]http.Handler)
 
 	// HeadCanUseGet allows the router to use the GET handler to respond to
 	// HEAD requests if no explicit HEAD handler has been added for the

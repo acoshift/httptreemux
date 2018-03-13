@@ -51,9 +51,9 @@ type LookupResult struct {
 	// error case. On a normal success, the statusCode will be `http.StatusOK`. A redirect code
 	// will also be used in the case
 	StatusCode  int
-	handler     http.HandlerFunc
+	handler     http.Handler
 	params      map[string]string
-	leafHandler map[string]http.HandlerFunc // Only has a value when StatusCode is MethodNotAllowed.
+	leafHandler map[string]http.Handler // Only has a value when StatusCode is MethodNotAllowed.
 }
 
 // Dump returns a text representation of the routing tree.
@@ -89,10 +89,10 @@ func (t *TreeMux) redirectStatusCode(method string) (int, bool) {
 	}
 }
 
-func redirectHandler(newPath string, statusCode int) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func redirectHandler(newPath string, statusCode int) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		redirect(w, r, newPath, statusCode)
-	}
+	})
 }
 
 func redirect(w http.ResponseWriter, r *http.Request, newPath string, statusCode int) {
@@ -166,7 +166,7 @@ func (t *TreeMux) lookup(w http.ResponseWriter, r *http.Request) (result LookupR
 	if !n.isCatchAll || t.RemoveCatchAllTrailingSlash {
 		if trailingSlash != n.addSlash && t.RedirectTrailingSlash {
 			if statusCode, ok := t.redirectStatusCode(r.Method); ok {
-				var h http.HandlerFunc
+				var h http.Handler
 				if n.addSlash {
 					// Need to add a slash.
 					h = redirectHandler(unescapedPath+"/", statusCode)
@@ -238,11 +238,11 @@ func (t *TreeMux) ServeLookupResult(w http.ResponseWriter, r *http.Request, lr L
 				t.mutex.RUnlock()
 			}
 		} else {
-			t.NotFoundHandler(w, r)
+			t.NotFoundHandler.ServeHTTP(w, r)
 		}
 	} else {
 		r = r.WithContext(AddParamsToContext(r.Context(), lr.params))
-		lr.handler(w, r)
+		lr.handler.ServeHTTP(w, r)
 	}
 }
 
@@ -271,7 +271,7 @@ func (t *TreeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // requested method. It simply writes the status code http.StatusMethodNotAllowed and fills
 // in the `Allow` header value appropriately.
 func MethodNotAllowedHandler(w http.ResponseWriter, r *http.Request,
-	methods map[string]http.HandlerFunc) {
+	methods map[string]http.Handler) {
 
 	for m := range methods {
 		w.Header().Add("Allow", m)
@@ -283,7 +283,7 @@ func MethodNotAllowedHandler(w http.ResponseWriter, r *http.Request,
 func New() *TreeMux {
 	tm := &TreeMux{
 		root:                    &node{path: "/"},
-		NotFoundHandler:         http.NotFound,
+		NotFoundHandler:         http.NotFoundHandler(),
 		MethodNotAllowedHandler: MethodNotAllowedHandler,
 		HeadCanUseGet:           true,
 		RedirectTrailingSlash:   true,

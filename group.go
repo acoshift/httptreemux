@@ -89,7 +89,7 @@ func (g *Group) NewGroup(path string) *Group {
 // 	GET /posts will redirect to /posts/.
 // 	GET /posts/ will match normally.
 // 	POST /posts will redirect to /posts/, because the GET method used a trailing slash.
-func (g *Group) Handle(method string, path string, handler http.HandlerFunc) {
+func (g *Group) Handle(method string, path string, handler http.Handler) {
 	g.mux.mutex.Lock()
 	defer g.mux.mutex.Unlock()
 
@@ -133,37 +133,37 @@ func (g *Group) Handle(method string, path string, handler http.HandlerFunc) {
 }
 
 // Syntactic sugar for Handle("GET", path, handler)
-func (g *Group) Get(path string, handler http.HandlerFunc) {
+func (g *Group) Get(path string, handler http.Handler) {
 	g.Handle("GET", path, handler)
 }
 
 // Syntactic sugar for Handle("POST", path, handler)
-func (g *Group) Post(path string, handler http.HandlerFunc) {
+func (g *Group) Post(path string, handler http.Handler) {
 	g.Handle("POST", path, handler)
 }
 
 // Syntactic sugar for Handle("PUT", path, handler)
-func (g *Group) Put(path string, handler http.HandlerFunc) {
+func (g *Group) Put(path string, handler http.Handler) {
 	g.Handle("PUT", path, handler)
 }
 
 // Syntactic sugar for Handle("DELETE", path, handler)
-func (g *Group) Delete(path string, handler http.HandlerFunc) {
+func (g *Group) Delete(path string, handler http.Handler) {
 	g.Handle("DELETE", path, handler)
 }
 
 // Syntactic sugar for Handle("PATCH", path, handler)
-func (g *Group) Patch(path string, handler http.HandlerFunc) {
+func (g *Group) Patch(path string, handler http.Handler) {
 	g.Handle("PATCH", path, handler)
 }
 
 // Syntactic sugar for Handle("HEAD", path, handler)
-func (g *Group) Head(path string, handler http.HandlerFunc) {
+func (g *Group) Head(path string, handler http.Handler) {
 	g.Handle("HEAD", path, handler)
 }
 
 // Syntactic sugar for Handle("OPTIONS", path, handler)
-func (g *Group) Options(path string, handler http.HandlerFunc) {
+func (g *Group) Options(path string, handler http.Handler) {
 	g.Handle("OPTIONS", path, handler)
 }
 
