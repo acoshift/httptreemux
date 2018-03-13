@@ -1,4 +1,4 @@
-// This is inspired by Julien Schmidt's httprouter, in that it uses a patricia tree, but the
+// Package httptreemux is inspired by Julien Schmidt's httprouter, in that it uses a patricia tree, but the
 // implementation is rather different. Specifically, the routing rules are relaxed so that a
 // single path segment may be a wildcard in one route and a static token in another. This gives a
 // nice combination of high performance with a lot of convenience in designing the routing patterns.
@@ -10,6 +10,7 @@ import (
 	"net/url"
 )
 
+// PanicHandler type
 type PanicHandler func(http.ResponseWriter, *http.Request, interface{})
 
 // RedirectBehavior sets the behavior when the router redirects the request to the
@@ -31,8 +32,10 @@ type PanicHandler func(http.ResponseWriter, *http.Request, interface{})
 // Finally, the UseHandler value will simply call the handler function for the pattern.
 type RedirectBehavior int
 
+// PathSource type
 type PathSource int
 
+// RedirectBehavior and PathSource consts
 const (
 	Redirect301 RedirectBehavior = iota // Return 301 Moved Permanently
 	Redirect307                         // Return 307 HTTP/1.1 Temporary Redirect
@@ -280,6 +283,7 @@ func MethodNotAllowedHandler(w http.ResponseWriter, r *http.Request,
 	w.WriteHeader(http.StatusMethodNotAllowed)
 }
 
+// New creates new TreeMux
 func New() *TreeMux {
 	tm := &TreeMux{
 		root:                    &node{path: "/"},

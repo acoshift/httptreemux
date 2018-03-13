@@ -5,6 +5,7 @@ import (
 	"sync"
 )
 
+// TreeMux type
 type TreeMux struct {
 	root  *node
 	mutex sync.RWMutex

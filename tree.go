@@ -38,7 +38,7 @@ func (n *node) sortStaticChild(i int) {
 	for i > 0 && n.staticChild[i].priority > n.staticChild[i-1].priority {
 		n.staticChild[i], n.staticChild[i-1] = n.staticChild[i-1], n.staticChild[i]
 		n.staticIndices[i], n.staticIndices[i-1] = n.staticIndices[i-1], n.staticIndices[i]
-		i -= 1
+		i--
 	}
 }
 
@@ -240,9 +240,8 @@ func (n *node) search(method, path string) (found *node, handler http.Handler, p
 	if pathLen == 0 {
 		if len(n.leafHandler) == 0 {
 			return nil, nil, nil
-		} else {
-			return n, n.leafHandler[method], nil
 		}
+		return n, n.leafHandler[method], nil
 	}
 
 	// First see if this matches a static token.

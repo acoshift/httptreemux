@@ -7,12 +7,13 @@ import (
 	"strings"
 )
 
+// Group type
 type Group struct {
 	path string
 	mux  *TreeMux
 }
 
-// Add a sub-group to this group
+// NewGroup adds a sub-group to this group
 func (g *Group) NewGroup(path string) *Group {
 	if len(path) < 1 {
 		panic("Group path must not be empty")
@@ -27,6 +28,8 @@ func (g *Group) NewGroup(path string) *Group {
 	return &Group{path, g.mux}
 }
 
+// Handle adds handler to this group
+//
 // Path elements starting with : indicate a wildcard in the path. A wildcard will only match on a
 // single path segment. That is, the pattern `/post/:postid` will match on `/post/1` or `/post/1/`,
 // but not `/post/1/2`.
@@ -132,37 +135,37 @@ func (g *Group) Handle(method string, path string, handler http.Handler) {
 	addOne(path)
 }
 
-// Syntactic sugar for Handle("GET", path, handler)
+// Get is a syntactic sugar for Handle("GET", path, handler)
 func (g *Group) Get(path string, handler http.Handler) {
 	g.Handle("GET", path, handler)
 }
 
-// Syntactic sugar for Handle("POST", path, handler)
+// Post is a syntactic sugar for Handle("POST", path, handler)
 func (g *Group) Post(path string, handler http.Handler) {
 	g.Handle("POST", path, handler)
 }
 
-// Syntactic sugar for Handle("PUT", path, handler)
+// Put is a syntactic sugar for Handle("PUT", path, handler)
 func (g *Group) Put(path string, handler http.Handler) {
 	g.Handle("PUT", path, handler)
 }
 
-// Syntactic sugar for Handle("DELETE", path, handler)
+// Delete is a syntactic sugar for Handle("DELETE", path, handler)
 func (g *Group) Delete(path string, handler http.Handler) {
 	g.Handle("DELETE", path, handler)
 }
 
-// Syntactic sugar for Handle("PATCH", path, handler)
+// Patch is a syntactic sugar for Handle("PATCH", path, handler)
 func (g *Group) Patch(path string, handler http.Handler) {
 	g.Handle("PATCH", path, handler)
 }
 
-// Syntactic sugar for Handle("HEAD", path, handler)
+// Head is a syntactic sugar for Handle("HEAD", path, handler)
 func (g *Group) Head(path string, handler http.Handler) {
 	g.Handle("HEAD", path, handler)
 }
 
-// Syntactic sugar for Handle("OPTIONS", path, handler)
+// Options is a syntactic sugar for Handle("OPTIONS", path, handler)
 func (g *Group) Options(path string, handler http.Handler) {
 	g.Handle("OPTIONS", path, handler)
 }

@@ -86,10 +86,9 @@ func serve(router *TreeMux, w http.ResponseWriter, r *http.Request, useLookup bo
 		result, found := router.Lookup(w, r)
 		router.ServeLookupResult(w, r, result)
 		return found
-	} else {
-		router.ServeHTTP(w, r)
-		return true
 	}
+	router.ServeHTTP(w, r)
+	return true
 }
 
 func TestMethods(t *testing.T) {
@@ -868,11 +867,11 @@ func TestEscapedRoutes(t *testing.T) {
 func createRoutes(numRoutes int) []string {
 	letters := "abcdefghijhklmnopqrstuvwxyz"
 	wordMap := map[string]bool{}
-	for i := 0; i < numRoutes/2; i += 1 {
+	for i := 0; i < numRoutes/2; i++ {
 		length := (i % 4) + 4
 
 		wordBytes := make([]byte, length)
-		for charIndex := 0; charIndex < length; charIndex += 1 {
+		for charIndex := 0; charIndex < length; charIndex++ {
 			wordBytes[charIndex] = letters[(i*3+charIndex*4)%len(letters)]
 		}
 		wordMap[string(wordBytes)] = true
@@ -913,7 +912,7 @@ func TestWriteConcurrency(t *testing.T) {
 
 	wg := sync.WaitGroup{}
 	addRoutes := func(base int, method string) {
-		for i := 0; i < len(routes); i += 1 {
+		for i := 0; i < len(routes); i++ {
 			route := routes[(i+base)%len(routes)]
 			// t.Logf("Adding %s %s", method, route)
 			router.Handle(method, route, simpleHandler)
@@ -961,7 +960,7 @@ func TestReadWriteConcurrency(t *testing.T) {
 
 	wg := sync.WaitGroup{}
 	addRoutes := func(base int, method string, routes []string) {
-		for i := 0; i < len(routes); i += 1 {
+		for i := 0; i < len(routes); i++ {
 			route := routes[(i+base)%len(routes)]
 			// t.Logf("Adding %s %s", method, route)
 			router.Handle(method, route, simpleHandler)
@@ -970,7 +969,7 @@ func TestReadWriteConcurrency(t *testing.T) {
 	}
 
 	handleRequests := func(base int, method string, routes []string, requireFound bool) {
-		for i := 0; i < len(routes); i += 1 {
+		for i := 0; i < len(routes); i++ {
 			route := routes[(i+base)%len(routes)]
 			// t.Logf("Serving %s %s", method, route)
 			r, _ := newRequest(method, route, nil)

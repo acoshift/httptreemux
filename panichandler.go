@@ -55,7 +55,8 @@ func renderPrettyError(rw http.ResponseWriter, req *http.Request, err interface{
 	tpl.Execute(rw, data)
 }
 
-func ShowErrorsJsonPanicHandler(w http.ResponseWriter, r *http.Request, err interface{}) {
+// ShowErrorsJSONPanicHandler func
+func ShowErrorsJSONPanicHandler(w http.ResponseWriter, r *http.Request, err interface{}) {
 	const size = 4096
 	stack := make([]byte, size)
 	stack = stack[:runtime.Stack(stack, false)]
