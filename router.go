@@ -206,34 +206,14 @@ func (t *TreeMux) lookup(w http.ResponseWriter, r *http.Request) (result LookupR
 // Regardless of the returned boolean's value, the LookupResult may be passed to ServeLookupResult
 // to be served appropriately.
 func (t *TreeMux) Lookup(w http.ResponseWriter, r *http.Request) (LookupResult, bool) {
-	if t.SafeAddRoutesWhileRunning {
-		// In concurrency safe mode, we acquire a read lock on the mutex for any access.
-		// This is optional to avoid potential performance loss in high-usage scenarios.
-		t.mutex.RLock()
-	}
-
-	result, found := t.lookup(w, r)
-
-	if t.SafeAddRoutesWhileRunning {
-		t.mutex.RUnlock()
-	}
-
-	return result, found
+	return t.lookup(w, r)
 }
 
 // ServeLookupResult serves a request, given a lookup result from the Lookup function.
 func (t *TreeMux) ServeLookupResult(w http.ResponseWriter, r *http.Request, lr LookupResult) {
 	if lr.handler == nil {
 		if lr.StatusCode == http.StatusMethodNotAllowed && lr.leafHandler != nil {
-			if t.SafeAddRoutesWhileRunning {
-				t.mutex.RLock()
-			}
-
 			t.MethodNotAllowedHandler(w, r, lr.leafHandler)
-
-			if t.SafeAddRoutesWhileRunning {
-				t.mutex.RUnlock()
-			}
 		} else {
 			t.NotFoundHandler.ServeHTTP(w, r)
 		}
@@ -244,18 +224,7 @@ func (t *TreeMux) ServeLookupResult(w http.ResponseWriter, r *http.Request, lr L
 }
 
 func (t *TreeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if t.SafeAddRoutesWhileRunning {
-		// In concurrency safe mode, we acquire a read lock on the mutex for any access.
-		// This is optional to avoid potential performance loss in high-usage scenarios.
-		t.mutex.RLock()
-	}
-
 	result, _ := t.lookup(w, r)
-
-	if t.SafeAddRoutesWhileRunning {
-		t.mutex.RUnlock()
-	}
-
 	t.ServeLookupResult(w, r, result)
 }
 
