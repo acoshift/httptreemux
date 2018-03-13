@@ -310,41 +310,6 @@ func TestOptionsHandler(t *testing.T) {
 	}
 }
 
-func TestPanic(t *testing.T) {
-
-	router := New()
-	router.PanicHandler = SimplePanicHandler
-	router.Get("/abc", panicHandler)
-	r, _ := newRequest("GET", "/abc", nil)
-	w := httptest.NewRecorder()
-
-	router.ServeHTTP(w, r)
-
-	if w.Code != http.StatusInternalServerError {
-		t.Errorf("Expected code %d from default panic handler, saw %d",
-			http.StatusInternalServerError, w.Code)
-	}
-
-	sawPanic := false
-	router.PanicHandler = func(w http.ResponseWriter, r *http.Request, err interface{}) {
-		sawPanic = true
-	}
-
-	router.ServeHTTP(w, r)
-	if !sawPanic {
-		t.Errorf("Custom panic handler was not called")
-	}
-
-	// Assume this does the right thing. Just a sanity test.
-	router.PanicHandler = ShowErrorsPanicHandler
-	w = httptest.NewRecorder()
-	router.ServeHTTP(w, r)
-	if w.Code != http.StatusInternalServerError {
-		t.Errorf("Expected code %d from ShowErrorsPanicHandler, saw %d",
-			http.StatusInternalServerError, w.Code)
-	}
-}
-
 func TestRedirect(t *testing.T) {
 	for _, scenario := range scenarios {
 		t.Log(scenario.description)
@@ -1092,21 +1057,8 @@ func BenchmarkRouterSimple(b *testing.B) {
 	benchRequest(b, router, r)
 }
 
-func BenchmarkRouterRootWithPanicHandler(b *testing.B) {
-	router := New()
-	router.PanicHandler = SimplePanicHandler
-
-	router.Get("/", simpleHandler)
-	router.Get("/user/dimfeld", simpleHandler)
-
-	r, _ := newRequest("GET", "/", nil)
-
-	benchRequest(b, router, r)
-}
-
 func BenchmarkRouterRootWithoutPanicHandler(b *testing.B) {
 	router := New()
-	router.PanicHandler = nil
 
 	router.Get("/", simpleHandler)
 	router.Get("/user/dimfeld", simpleHandler)

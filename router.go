@@ -64,12 +64,6 @@ func (t *TreeMux) Dump() string {
 	return t.root.dumpTree("", "")
 }
 
-func (t *TreeMux) serveHTTPPanic(w http.ResponseWriter, r *http.Request) {
-	if err := recover(); err != nil {
-		t.PanicHandler(w, r, err)
-	}
-}
-
 func (t *TreeMux) redirectStatusCode(method string) (int, bool) {
 	var behavior RedirectBehavior
 	var ok bool
@@ -250,10 +244,6 @@ func (t *TreeMux) ServeLookupResult(w http.ResponseWriter, r *http.Request, lr L
 }
 
 func (t *TreeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if t.PanicHandler != nil {
-		defer t.serveHTTPPanic(w, r)
-	}
-
 	if t.SafeAddRoutesWhileRunning {
 		// In concurrency safe mode, we acquire a read lock on the mutex for any access.
 		// This is optional to avoid potential performance loss in high-usage scenarios.

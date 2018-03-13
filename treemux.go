@@ -12,9 +12,6 @@ type TreeMux struct {
 
 	Group
 
-	// The default PanicHandler just returns a 500 code.
-	PanicHandler PanicHandler
-
 	// The default NotFoundHandler is http.NotFound.
 	NotFoundHandler http.Handler
 
