@@ -1,18 +1,20 @@
 package httptreemux
 
 import (
+	"context"
 	"net/http"
 	"testing"
 )
 
-func dummyHandler(w http.ResponseWriter, r *http.Request, urlParams map[string]string) {
+func dummyHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
 func addPath(t *testing.T, tree *node, path string) {
 	t.Logf("Adding path %s", path)
 	n := tree.addPath(path[1:], nil, false)
-	handler := func(w http.ResponseWriter, r *http.Request, urlParams map[string]string) {
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		urlParams := ContextParams(r.Context())
 		urlParams["path"] = path
 	}
 	n.setHandler("GET", handler, false)
@@ -55,7 +57,7 @@ func testPath(t *testing.T, tree *node, path string, expectPath string, expected
 	}
 
 	pathMap := make(map[string]string)
-	handler(nil, nil, pathMap)
+	handler(nil, (&http.Request{}).WithContext(AddParamsToContext(context.Background(), pathMap)))
 	matchedPath := pathMap["path"]
 
 	if matchedPath != expectPath {
@@ -232,7 +234,7 @@ func TestTree(t *testing.T) {
 		handler, ok := n.leafHandler["GET"]
 		matchPath := ""
 		if ok {
-			handler(nil, nil, params)
+			handler(nil, (&http.Request{}).WithContext(AddParamsToContext(context.Background(), params)))
 			matchPath = params["path"]
 		}
 
@@ -310,7 +312,7 @@ func BenchmarkTreeNullRequest(b *testing.B) {
 	b.ReportAllocs()
 	tree := &node{
 		path: "/",
-		leafHandler: map[string]HandlerFunc{
+		leafHandler: map[string]http.HandlerFunc{
 			"GET": dummyHandler,
 		},
 	}
@@ -325,7 +327,7 @@ func BenchmarkTreeOneStatic(b *testing.B) {
 	b.ReportAllocs()
 	tree := &node{
 		path: "/",
-		leafHandler: map[string]HandlerFunc{
+		leafHandler: map[string]http.HandlerFunc{
 			"GET": dummyHandler,
 		},
 	}
@@ -340,7 +342,7 @@ func BenchmarkTreeOneStatic(b *testing.B) {
 func BenchmarkTreeOneParam(b *testing.B) {
 	tree := &node{
 		path: "/",
-		leafHandler: map[string]HandlerFunc{
+		leafHandler: map[string]http.HandlerFunc{
 			"GET": dummyHandler,
 		},
 	}
@@ -356,7 +358,7 @@ func BenchmarkTreeOneParam(b *testing.B) {
 func BenchmarkTreeLongParams(b *testing.B) {
 	tree := &node{
 		path: "/",
-		leafHandler: map[string]HandlerFunc{
+		leafHandler: map[string]http.HandlerFunc{
 			"GET": dummyHandler,
 		},
 	}

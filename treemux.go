@@ -1,7 +1,6 @@
 package httptreemux
 
 import (
-	"context"
 	"net/http"
 	"sync"
 )
@@ -20,7 +19,7 @@ type TreeMux struct {
 
 	// Any OPTIONS request that matches a path without its own OPTIONS handler will use this handler,
 	// if set, instead of calling MethodNotAllowedHandler.
-	OptionsHandler HandlerFunc
+	OptionsHandler http.HandlerFunc
 
 	// MethodNotAllowedHandler is called when a pattern matches, but that
 	// pattern does not have a handler for the requested method. The default
@@ -29,7 +28,7 @@ type TreeMux struct {
 	// The methods parameter contains the map of each method to the corresponding
 	// handler function.
 	MethodNotAllowedHandler func(w http.ResponseWriter, r *http.Request,
-		methods map[string]HandlerFunc)
+		methods map[string]http.HandlerFunc)
 
 	// HeadCanUseGet allows the router to use the GET handler to respond to
 	// HEAD requests if no explicit HEAD handler has been added for the
@@ -73,75 +72,8 @@ type TreeMux struct {
 	// a version passed through URL.EscapedPath. This behavior is disabled by default.
 	EscapeAddedRoutes bool
 
-	// If present, override the default context with this one.
-	DefaultContext context.Context
-
 	// SafeAddRoutesWhileRunning tells the router to protect all accesses to the tree with an RWMutex. This is only needed
 	// if you are going to add routes after the router has already begun serving requests. There is a potential
 	// performance penalty at high load.
 	SafeAddRoutesWhileRunning bool
-}
-
-func (t *TreeMux) setDefaultRequestContext(r *http.Request) *http.Request {
-	if t.DefaultContext != nil {
-		r = r.WithContext(t.DefaultContext)
-	}
-
-	return r
-}
-
-type ContextMux struct {
-	*TreeMux
-	*ContextGroup
-}
-
-// NewContextMux returns a TreeMux preconfigured to work with standard http
-// Handler functions and context objects.
-func NewContextMux() *ContextMux {
-	mux := New()
-	cg := mux.UsingContext()
-
-	return &ContextMux{
-		TreeMux:      mux,
-		ContextGroup: cg,
-	}
-}
-
-func (cm *ContextMux) NewGroup(path string) *ContextGroup {
-	return cm.ContextGroup.NewGroup(path)
-}
-
-// Get is convenience method for handling GET requests on a context group.
-func (cm *ContextMux) Get(path string, handler http.HandlerFunc) {
-	cm.ContextGroup.Handle("GET", path, handler)
-}
-
-// Post is convenience method for handling POST requests on a context group.
-func (cm *ContextMux) Post(path string, handler http.HandlerFunc) {
-	cm.ContextGroup.Handle("POST", path, handler)
-}
-
-// Put is convenience method for handling PUT requests on a context group.
-func (cm *ContextMux) Put(path string, handler http.HandlerFunc) {
-	cm.ContextGroup.Handle("PUT", path, handler)
-}
-
-// Delete is convenience method for handling DELETE requests on a context group.
-func (cm *ContextMux) Delete(path string, handler http.HandlerFunc) {
-	cm.ContextGroup.Handle("DELETE", path, handler)
-}
-
-// Patch is convenience method for handling PATCH requests on a context group.
-func (cm *ContextMux) Patch(path string, handler http.HandlerFunc) {
-	cm.ContextGroup.Handle("PATCH", path, handler)
-}
-
-// Head is convenience method for handling HEAD requests on a context group.
-func (cm *ContextMux) Head(path string, handler http.HandlerFunc) {
-	cm.ContextGroup.Handle("HEAD", path, handler)
-}
-
-// Options is convenience method for handling OPTIONS requests on a context group.
-func (cm *ContextMux) Options(path string, handler http.HandlerFunc) {
-	cm.ContextGroup.Handle("OPTIONS", path, handler)
 }
