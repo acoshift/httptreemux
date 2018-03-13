@@ -107,11 +107,11 @@ func testMethods(t *testing.T, newRequest RequestCreator, headCanUseGet bool, us
 
 	router := New()
 	router.HeadCanUseGet = headCanUseGet
-	router.GET("/user/:param", makeHandler("GET"))
-	router.POST("/user/:param", makeHandler("POST"))
-	router.PATCH("/user/:param", makeHandler("PATCH"))
-	router.PUT("/user/:param", makeHandler("PUT"))
-	router.DELETE("/user/:param", makeHandler("DELETE"))
+	router.Get("/user/:param", makeHandler("GET"))
+	router.Post("/user/:param", makeHandler("POST"))
+	router.Patch("/user/:param", makeHandler("PATCH"))
+	router.Put("/user/:param", makeHandler("PUT"))
+	router.Delete("/user/:param", makeHandler("DELETE"))
 
 	testMethod := func(method, expect string) {
 		result = ""
@@ -145,7 +145,7 @@ func testMethods(t *testing.T, newRequest RequestCreator, headCanUseGet bool, us
 		testMethod("HEAD", "")
 	}
 
-	router.HEAD("/user/:param", makeHandler("HEAD"))
+	router.Head("/user/:param", makeHandler("HEAD"))
 	testMethod("HEAD", "HEAD")
 }
 
@@ -157,7 +157,7 @@ func TestNotFound(t *testing.T) {
 	}
 
 	router := New()
-	router.GET("/user/abc", simpleHandler)
+	router.Get("/user/abc", simpleHandler)
 
 	w := httptest.NewRecorder()
 	r, _ := newRequest("GET", "/abc/", nil)
@@ -200,9 +200,9 @@ func TestMethodNotAllowedHandler(t *testing.T) {
 	}
 
 	router := New()
-	router.GET("/user/abc", simpleHandler)
-	router.PUT("/user/abc", simpleHandler)
-	router.DELETE("/user/abc", simpleHandler)
+	router.Get("/user/abc", simpleHandler)
+	router.Put("/user/abc", simpleHandler)
+	router.Delete("/user/abc", simpleHandler)
 
 	w := httptest.NewRecorder()
 	r, _ := newRequest("POST", "/user/abc", nil)
@@ -244,10 +244,10 @@ func TestOptionsHandler(t *testing.T) {
 	}
 
 	router := New()
-	router.GET("/user/abc", simpleHandler)
-	router.PUT("/user/abc", simpleHandler)
-	router.DELETE("/user/abc", simpleHandler)
-	router.OPTIONS("/user/abc/options", customOptionsHandler)
+	router.Get("/user/abc", simpleHandler)
+	router.Put("/user/abc", simpleHandler)
+	router.Delete("/user/abc", simpleHandler)
+	router.Options("/user/abc/options", customOptionsHandler)
 
 	// test without an OPTIONS handler
 	w := httptest.NewRecorder()
@@ -311,7 +311,7 @@ func TestPanic(t *testing.T) {
 
 	router := New()
 	router.PanicHandler = SimplePanicHandler
-	router.GET("/abc", panicHandler)
+	router.Get("/abc", panicHandler)
 	r, _ := newRequest("GET", "/abc", nil)
 	w := httptest.NewRecorder()
 
@@ -395,12 +395,12 @@ func testRedirect(t *testing.T, defaultBehavior, getBehavior, postBehavior Redir
 		expectedCodeMap["POST"] = expectedCodeMap["PUT"]
 	}
 
-	router.GET("/slash/", redirHandler)
-	router.GET("/noslash", redirHandler)
-	router.POST("/slash/", redirHandler)
-	router.POST("/noslash", redirHandler)
-	router.PUT("/slash/", redirHandler)
-	router.PUT("/noslash", redirHandler)
+	router.Get("/slash/", redirHandler)
+	router.Get("/noslash", redirHandler)
+	router.Post("/slash/", redirHandler)
+	router.Post("/noslash", redirHandler)
+	router.Put("/slash/", redirHandler)
+	router.Put("/noslash", redirHandler)
 
 	for method, expectedCode := range expectedCodeMap {
 		t.Logf("Testing method %s, expecting code %d", method, expectedCode)
@@ -520,8 +520,8 @@ func TestSkipRedirect(t *testing.T) {
 	router := New()
 	router.RedirectTrailingSlash = false
 	router.RedirectCleanPath = false
-	router.GET("/slash/", simpleHandler)
-	router.GET("/noslash", simpleHandler)
+	router.Get("/slash/", simpleHandler)
+	router.Get("/noslash", simpleHandler)
 
 	w := httptest.NewRecorder()
 	r, _ := newRequest("GET", "/slash", nil)
@@ -549,7 +549,7 @@ func TestCatchAllTrailingSlashRedirect(t *testing.T) {
 	router := New()
 	redirectSettings := []bool{false, true}
 
-	router.GET("/abc/*path", simpleHandler)
+	router.Get("/abc/*path", simpleHandler)
 
 	testPath := func(path string) {
 		r, _ := newRequest("GET", "/abc/"+path, nil)
@@ -595,7 +595,7 @@ func TestRoot(t *testing.T) {
 			handlerCalled = true
 		}
 		router := New()
-		router.GET("/", handler)
+		router.Get("/", handler)
 
 		r, _ := scenario.RequestCreator("GET", "/", nil)
 		w := new(mockResponseWriter)
@@ -615,10 +615,10 @@ func TestWildcardAtSplitNode(t *testing.T) {
 	}
 
 	router := New()
-	router.GET("/pumpkin", simpleHandler)
-	router.GET("/passing", simpleHandler)
-	router.GET("/:slug", simpleHandler)
-	router.GET("/:slug/abc", simpleHandler)
+	router.Get("/pumpkin", simpleHandler)
+	router.Get("/passing", simpleHandler)
+	router.Get("/:slug", simpleHandler)
+	router.Get("/:slug/abc", simpleHandler)
 
 	t.Log(router.root.dumpTree("", " "))
 
@@ -665,8 +665,8 @@ func TestSlash(t *testing.T) {
 		param = params["year"] + " " + params["month"]
 	}
 	router := New()
-	router.GET("/abc/:param", handler)
-	router.GET("/year/:year/month/:month", ymHandler)
+	router.Get("/abc/:param", handler)
+	router.Get("/year/:year/month/:month", ymHandler)
 
 	r, _ := newRequest("GET", "/abc/de%2ff", nil)
 	w := new(mockResponseWriter)
@@ -692,9 +692,9 @@ func TestQueryString(t *testing.T) {
 			param = params["param"]
 		}
 		router := New()
-		router.GET("/static", handler)
-		router.GET("/wildcard/:param", handler)
-		router.GET("/catchall/*param", handler)
+		router.Get("/static", handler)
+		router.Get("/wildcard/:param", handler)
+		router.Get("/catchall/*param", handler)
 
 		r, _ := scenario.RequestCreator("GET", "/static?abc=def&ghi=jkl", nil)
 		w := new(mockResponseWriter)
@@ -730,8 +730,8 @@ func TestPathSource(t *testing.T) {
 		called = "bananas"
 	}
 	router := New()
-	router.GET("/apples", appleHandler)
-	router.GET("/bananas", bananaHandler)
+	router.Get("/apples", appleHandler)
+	router.Get("/bananas", bananaHandler)
 
 	// Set up a request with different values in URL and RequestURI.
 	r, _ := newRequest("GET", "/apples", nil)
@@ -817,7 +817,7 @@ func TestEscapedRoutes(t *testing.T) {
 		for _, c := range testcases {
 			t.Logf("Adding route %s", c.Route)
 			theCase := c
-			router.GET(c.Route, func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+			router.Get(c.Route, func(w http.ResponseWriter, r *http.Request, params map[string]string) {
 				handleTestResponse(theCase, w, r, params)
 			})
 		}
@@ -1005,11 +1005,11 @@ func TestReadWriteConcurrency(t *testing.T) {
 
 func TestLookup(t *testing.T) {
 	router := New()
-	router.GET("/", simpleHandler)
-	router.GET("/user/dimfeld", simpleHandler)
-	router.POST("/user/dimfeld", simpleHandler)
-	router.GET("/abc/*", simpleHandler)
-	router.POST("/abc/*", simpleHandler)
+	router.Get("/", simpleHandler)
+	router.Get("/user/dimfeld", simpleHandler)
+	router.Post("/user/dimfeld", simpleHandler)
+	router.Get("/abc/*", simpleHandler)
+	router.Post("/abc/*", simpleHandler)
 
 	var tryLookup = func(method, path string, expectFound bool, expectCode int) {
 		r, _ := newRequest(method, path, nil)
@@ -1048,7 +1048,7 @@ func TestRedirectEscapedPath(t *testing.T) {
 
 	testHandler := func(w http.ResponseWriter, r *http.Request, params map[string]string) {}
 
-	router.GET("/:escaped/", testHandler)
+	router.Get("/:escaped/", testHandler)
 
 	w := httptest.NewRecorder()
 	u, err := url.Parse("/Test P@th")
@@ -1076,8 +1076,8 @@ func TestRedirectEscapedPath(t *testing.T) {
 func BenchmarkRouterSimple(b *testing.B) {
 	router := New()
 
-	router.GET("/", simpleHandler)
-	router.GET("/user/dimfeld", simpleHandler)
+	router.Get("/", simpleHandler)
+	router.Get("/user/dimfeld", simpleHandler)
 
 	r, _ := newRequest("GET", "/user/dimfeld", nil)
 
@@ -1088,8 +1088,8 @@ func BenchmarkRouterRootWithPanicHandler(b *testing.B) {
 	router := New()
 	router.PanicHandler = SimplePanicHandler
 
-	router.GET("/", simpleHandler)
-	router.GET("/user/dimfeld", simpleHandler)
+	router.Get("/", simpleHandler)
+	router.Get("/user/dimfeld", simpleHandler)
 
 	r, _ := newRequest("GET", "/", nil)
 
@@ -1100,8 +1100,8 @@ func BenchmarkRouterRootWithoutPanicHandler(b *testing.B) {
 	router := New()
 	router.PanicHandler = nil
 
-	router.GET("/", simpleHandler)
-	router.GET("/user/dimfeld", simpleHandler)
+	router.Get("/", simpleHandler)
+	router.Get("/user/dimfeld", simpleHandler)
 
 	r, _ := newRequest("GET", "/", nil)
 
@@ -1111,8 +1111,8 @@ func BenchmarkRouterRootWithoutPanicHandler(b *testing.B) {
 func BenchmarkRouterParam(b *testing.B) {
 	router := New()
 
-	router.GET("/", simpleHandler)
-	router.GET("/user/:name", simpleHandler)
+	router.Get("/", simpleHandler)
+	router.Get("/user/:name", simpleHandler)
 
 	r, _ := newRequest("GET", "/user/dimfeld", nil)
 
@@ -1122,8 +1122,8 @@ func BenchmarkRouterParam(b *testing.B) {
 func BenchmarkRouterLongParams(b *testing.B) {
 	router := New()
 
-	router.GET("/", simpleHandler)
-	router.GET("/user/:name/:resource", simpleHandler)
+	router.Get("/", simpleHandler)
+	router.Get("/user/:name/:resource", simpleHandler)
 
 	r, _ := newRequest("GET", "/user/aaaabbbbccccddddeeeeffff/asdfghjkl", nil)
 

@@ -14,11 +14,11 @@ func TestEmptyGroupAndMapping(t *testing.T) {
 			t.Error(`Expected NewGroup("")`)
 		}
 	}()
-	New().GET("", func(w http.ResponseWriter, _ *http.Request, _ map[string]string) {})
+	New().Get("", func(w http.ResponseWriter, _ *http.Request, _ map[string]string) {})
 }
 func TestSubGroupSlashMapping(t *testing.T) {
 	r := New()
-	r.NewGroup("/foo").GET("/", func(w http.ResponseWriter, _ *http.Request, _ map[string]string) {
+	r.NewGroup("/foo").Get("/", func(w http.ResponseWriter, _ *http.Request, _ map[string]string) {
 		w.WriteHeader(200)
 	})
 
@@ -29,27 +29,27 @@ func TestSubGroupSlashMapping(t *testing.T) {
 	recorder = httptest.NewRecorder()
 	r.ServeHTTP(recorder, req)
 	if recorder.Code != 301 { //should get redirected
-		t.Error(`/foo on NewGroup("/foo").GET("/") should result in 301 response, got:`, recorder.Code)
+		t.Error(`/foo on NewGroup("/foo").Get("/") should result in 301 response, got:`, recorder.Code)
 	}
 
 	req, _ = http.NewRequest("GET", "/foo/", nil)
 	recorder = httptest.NewRecorder()
 	r.ServeHTTP(recorder, req)
 	if recorder.Code != 200 {
-		t.Error(`/foo/ on NewGroup("/foo").GET("/"") should result in 200 response, got:`, recorder.Code)
+		t.Error(`/foo/ on NewGroup("/foo").Get("/"") should result in 200 response, got:`, recorder.Code)
 	}
 }
 
 func TestSubGroupEmptyMapping(t *testing.T) {
 	r := New()
-	r.NewGroup("/foo").GET("", func(w http.ResponseWriter, _ *http.Request, _ map[string]string) {
+	r.NewGroup("/foo").Get("", func(w http.ResponseWriter, _ *http.Request, _ map[string]string) {
 		w.WriteHeader(200)
 	})
 	req, _ := http.NewRequest("GET", "/foo", nil)
 	recorder := httptest.NewRecorder()
 	r.ServeHTTP(recorder, req)
 	if recorder.Code != 200 {
-		t.Error(`/foo on NewGroup("/foo").GET("") should result in 200 response, got:`, recorder.Code)
+		t.Error(`/foo on NewGroup("/foo").Get("") should result in 200 response, got:`, recorder.Code)
 	}
 }
 
@@ -67,7 +67,7 @@ func TestInvalidHandle(t *testing.T) {
 			t.Error("Bad handle path should have caused a panic")
 		}
 	}()
-	New().NewGroup("/foo").GET("bar", nil)
+	New().NewGroup("/foo").Get("bar", nil)
 }
 
 func TestInvalidSubPath(t *testing.T) {
@@ -100,11 +100,11 @@ func testGroupMethods(t *testing.T, reqGen RequestCreator, headCanUseGet bool) {
 	router.HeadCanUseGet = headCanUseGet
 	// Testing with a sub-group of a group as that will test everything at once
 	g := router.NewGroup("/base").NewGroup("/user")
-	g.GET("/:param", makeHandler("GET"))
-	g.POST("/:param", makeHandler("POST"))
-	g.PATCH("/:param", makeHandler("PATCH"))
-	g.PUT("/:param", makeHandler("PUT"))
-	g.DELETE("/:param", makeHandler("DELETE"))
+	g.Get("/:param", makeHandler("GET"))
+	g.Post("/:param", makeHandler("POST"))
+	g.Patch("/:param", makeHandler("PATCH"))
+	g.Put("/:param", makeHandler("PUT"))
+	g.Delete("/:param", makeHandler("DELETE"))
 
 	testMethod := func(method, expect string) {
 		result = ""
@@ -133,7 +133,7 @@ func testGroupMethods(t *testing.T, reqGen RequestCreator, headCanUseGet bool) {
 		testMethod("HEAD", "")
 	}
 
-	router.HEAD("/base/user/:param", makeHandler("HEAD"))
+	router.Head("/base/user/:param", makeHandler("HEAD"))
 	testMethod("HEAD", "HEAD")
 }
 
@@ -148,8 +148,8 @@ func TestSetGetAfterHead(t *testing.T) {
 
 	router := New()
 	router.HeadCanUseGet = true
-	router.HEAD("/abc", makeHandler("HEAD"))
-	router.GET("/abc", makeHandler("GET"))
+	router.Head("/abc", makeHandler("HEAD"))
+	router.Get("/abc", makeHandler("GET"))
 
 	testMethod := func(method, expect string) {
 		result = ""

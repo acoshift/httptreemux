@@ -20,11 +20,11 @@ type ContextGroup struct {
 //              tree := httptreemux.New()
 //              group := tree.NewGroup("/api")
 //
-//              group.GET("/v1", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+//              group.Get("/v1", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
 //                  w.Write([]byte(`GET /api/v1`))
 //              })
 //
-//              group.UsingContext().GET("/v2", func(w http.ResponseWriter, r *http.Request) {
+//              group.UsingContext().Get("/v2", func(w http.ResponseWriter, r *http.Request) {
 //                  w.Write([]byte(`GET /api/v2`))
 //              })
 //
@@ -65,38 +65,38 @@ func (cg *ContextGroup) Handler(method, path string, handler http.Handler) {
 	})
 }
 
-// GET is convenience method for handling GET requests on a context group.
-func (cg *ContextGroup) GET(path string, handler http.HandlerFunc) {
+// Get is convenience method for handling GET requests on a context group.
+func (cg *ContextGroup) Get(path string, handler http.HandlerFunc) {
 	cg.Handle("GET", path, handler)
 }
 
-// POST is convenience method for handling POST requests on a context group.
-func (cg *ContextGroup) POST(path string, handler http.HandlerFunc) {
+// Post is convenience method for handling POST requests on a context group.
+func (cg *ContextGroup) Post(path string, handler http.HandlerFunc) {
 	cg.Handle("POST", path, handler)
 }
 
-// PUT is convenience method for handling PUT requests on a context group.
-func (cg *ContextGroup) PUT(path string, handler http.HandlerFunc) {
+// Put is convenience method for handling PUT requests on a context group.
+func (cg *ContextGroup) Put(path string, handler http.HandlerFunc) {
 	cg.Handle("PUT", path, handler)
 }
 
-// DELETE is convenience method for handling DELETE requests on a context group.
-func (cg *ContextGroup) DELETE(path string, handler http.HandlerFunc) {
+// Delete is convenience method for handling DELETE requests on a context group.
+func (cg *ContextGroup) Delete(path string, handler http.HandlerFunc) {
 	cg.Handle("DELETE", path, handler)
 }
 
-// PATCH is convenience method for handling PATCH requests on a context group.
-func (cg *ContextGroup) PATCH(path string, handler http.HandlerFunc) {
+// Patch is convenience method for handling PATCH requests on a context group.
+func (cg *ContextGroup) Patch(path string, handler http.HandlerFunc) {
 	cg.Handle("PATCH", path, handler)
 }
 
-// HEAD is convenience method for handling HEAD requests on a context group.
-func (cg *ContextGroup) HEAD(path string, handler http.HandlerFunc) {
+// Head is convenience method for handling HEAD requests on a context group.
+func (cg *ContextGroup) Head(path string, handler http.HandlerFunc) {
 	cg.Handle("HEAD", path, handler)
 }
 
-// OPTIONS is convenience method for handling OPTIONS requests on a context group.
-func (cg *ContextGroup) OPTIONS(path string, handler http.HandlerFunc) {
+// Options is convenience method for handling OPTIONS requests on a context group.
+func (cg *ContextGroup) Options(path string, handler http.HandlerFunc) {
 	cg.Handle("OPTIONS", path, handler)
 }
 

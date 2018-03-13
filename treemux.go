@@ -111,37 +111,37 @@ func (cm *ContextMux) NewGroup(path string) *ContextGroup {
 	return cm.ContextGroup.NewGroup(path)
 }
 
-// GET is convenience method for handling GET requests on a context group.
-func (cm *ContextMux) GET(path string, handler http.HandlerFunc) {
+// Get is convenience method for handling GET requests on a context group.
+func (cm *ContextMux) Get(path string, handler http.HandlerFunc) {
 	cm.ContextGroup.Handle("GET", path, handler)
 }
 
-// POST is convenience method for handling POST requests on a context group.
-func (cm *ContextMux) POST(path string, handler http.HandlerFunc) {
+// Post is convenience method for handling POST requests on a context group.
+func (cm *ContextMux) Post(path string, handler http.HandlerFunc) {
 	cm.ContextGroup.Handle("POST", path, handler)
 }
 
-// PUT is convenience method for handling PUT requests on a context group.
-func (cm *ContextMux) PUT(path string, handler http.HandlerFunc) {
+// Put is convenience method for handling PUT requests on a context group.
+func (cm *ContextMux) Put(path string, handler http.HandlerFunc) {
 	cm.ContextGroup.Handle("PUT", path, handler)
 }
 
-// DELETE is convenience method for handling DELETE requests on a context group.
-func (cm *ContextMux) DELETE(path string, handler http.HandlerFunc) {
+// Delete is convenience method for handling DELETE requests on a context group.
+func (cm *ContextMux) Delete(path string, handler http.HandlerFunc) {
 	cm.ContextGroup.Handle("DELETE", path, handler)
 }
 
-// PATCH is convenience method for handling PATCH requests on a context group.
-func (cm *ContextMux) PATCH(path string, handler http.HandlerFunc) {
+// Patch is convenience method for handling PATCH requests on a context group.
+func (cm *ContextMux) Patch(path string, handler http.HandlerFunc) {
 	cm.ContextGroup.Handle("PATCH", path, handler)
 }
 
-// HEAD is convenience method for handling HEAD requests on a context group.
-func (cm *ContextMux) HEAD(path string, handler http.HandlerFunc) {
+// Head is convenience method for handling HEAD requests on a context group.
+func (cm *ContextMux) Head(path string, handler http.HandlerFunc) {
 	cm.ContextGroup.Handle("HEAD", path, handler)
 }
 
-// OPTIONS is convenience method for handling OPTIONS requests on a context group.
-func (cm *ContextMux) OPTIONS(path string, handler http.HandlerFunc) {
+// Options is convenience method for handling OPTIONS requests on a context group.
+func (cm *ContextMux) Options(path string, handler http.HandlerFunc) {
 	cm.ContextGroup.Handle("OPTIONS", path, handler)
 }

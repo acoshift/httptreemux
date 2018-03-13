@@ -46,11 +46,11 @@ func (g *Group) NewGroup(path string) *Group {
 //
 // So with the following patterns, we'll see certain matches:
 //	 router = httptreemux.New()
-//	 router.GET("/:page", pageHandler)
-//	 router.GET("/:year/:month/:post", postHandler)
-//	 router.GET("/:year/:month", archiveHandler)
-//	 router.GET("/images/*path", staticHandler)
-//	 router.GET("/favicon.ico", staticHandler)
+//	 router.Get("/:page", pageHandler)
+//	 router.Get("/:year/:month/:post", postHandler)
+//	 router.Get("/:year/:month", archiveHandler)
+//	 router.Get("/images/*path", staticHandler)
+//	 router.Get("/favicon.ico", staticHandler)
 //
 //	 /abc will match /:page
 //	 /2014/05 will match /:year/:month
@@ -79,9 +79,9 @@ func (g *Group) NewGroup(path string) *Group {
 // TreeMux.RemoveCatchAllTrailingSlash to true.
 //
 // 	router = httptreemux.New()
-// 	router.GET("/about", pageHandler)
-// 	router.GET("/posts/", postIndexHandler)
-// 	router.POST("/posts", postFormHandler)
+// 	router.Get("/about", pageHandler)
+// 	router.Get("/posts/", postIndexHandler)
+// 	router.Post("/posts", postFormHandler)
 //
 // 	GET /about will match normally.
 // 	GET /about/ will redirect to /about.
@@ -132,37 +132,37 @@ func (g *Group) Handle(method string, path string, handler HandlerFunc) {
 }
 
 // Syntactic sugar for Handle("GET", path, handler)
-func (g *Group) GET(path string, handler HandlerFunc) {
+func (g *Group) Get(path string, handler HandlerFunc) {
 	g.Handle("GET", path, handler)
 }
 
 // Syntactic sugar for Handle("POST", path, handler)
-func (g *Group) POST(path string, handler HandlerFunc) {
+func (g *Group) Post(path string, handler HandlerFunc) {
 	g.Handle("POST", path, handler)
 }
 
 // Syntactic sugar for Handle("PUT", path, handler)
-func (g *Group) PUT(path string, handler HandlerFunc) {
+func (g *Group) Put(path string, handler HandlerFunc) {
 	g.Handle("PUT", path, handler)
 }
 
 // Syntactic sugar for Handle("DELETE", path, handler)
-func (g *Group) DELETE(path string, handler HandlerFunc) {
+func (g *Group) Delete(path string, handler HandlerFunc) {
 	g.Handle("DELETE", path, handler)
 }
 
 // Syntactic sugar for Handle("PATCH", path, handler)
-func (g *Group) PATCH(path string, handler HandlerFunc) {
+func (g *Group) Patch(path string, handler HandlerFunc) {
 	g.Handle("PATCH", path, handler)
 }
 
 // Syntactic sugar for Handle("HEAD", path, handler)
-func (g *Group) HEAD(path string, handler HandlerFunc) {
+func (g *Group) Head(path string, handler HandlerFunc) {
 	g.Handle("HEAD", path, handler)
 }
 
 // Syntactic sugar for Handle("OPTIONS", path, handler)
-func (g *Group) OPTIONS(path string, handler HandlerFunc) {
+func (g *Group) Options(path string, handler HandlerFunc) {
 	g.Handle("OPTIONS", path, handler)
 }
 

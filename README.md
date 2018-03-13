@@ -24,14 +24,14 @@ The `UsingContext` method will wrap the router or group in a new group at the sa
 router := httptreemux.New()
 
 group := router.NewGroup("/api")
-group.GET("/v1/:id", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+group.Get("/v1/:id", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
     id := params["id"]
     fmt.Fprintf(w, "GET /api/v1/%s", id)
 })
 
 // UsingContext returns a version of the router or group with context support.
 ctxGroup := group.UsingContext() // sibling to 'group' node in tree
-ctxGroup.GET("/v2/:id", func(w http.ResponseWriter, r *http.Request) {
+ctxGroup.Get("/v2/:id", func(w http.ResponseWriter, r *http.Request) {
     params := httptreemux.ContextParams(r.Context())
     id := params["id"]
     fmt.Fprintf(w, "GET /api/v2/%s", id)
@@ -47,13 +47,13 @@ The `NewContextMux` function returns a router preconfigured for use with `contex
 ```go
 router := httptreemux.NewContextMux()
 
-router.GET("/:page", func(w http.ResponseWriter, r *http.Request) {
+router.Get("/:page", func(w http.ResponseWriter, r *http.Request) {
     params := httptreemux.ContextParams(r.Context())
     fmt.Fprintf(w, "GET /%s", params["page"])
 })
 
 group := tree.NewGroup("/api")
-group.GET("/v1/:id", func(w http.ResponseWriter, r *http.Request) {
+group.Get("/v1/:id", func(w http.ResponseWriter, r *http.Request) {
     params := httptreemux.ContextParams(r.Context())
     id := params["id"]
     fmt.Fprintf(w, "GET /api/v1/%s", id)
@@ -89,10 +89,10 @@ A path element starting with `*` is a catch-all, whose value will be a string co
 The characters `:` and `*` can be used at the beginning of a path segment by escaping them with a backslash. A double backslash at the beginning of a segment is interpreted as a single backslash. These escapes are only checked at the very beginning of a path segment; they are not necessary or processed elsewhere in a token.
 
 ```go
-router.GET("/foo/\\*starToken", handler) // matches /foo/*starToken
-router.GET("/foo/star*inTheMiddle", handler) // matches /foo/star*inTheMiddle
-router.GET("/foo/starBackslash\\*", handler) // matches /foo/starBackslash\*
-router.GET("/foo/\\\\*backslashWithStar") // matches /foo/\*backslashWithStar
+router.Get("/foo/\\*starToken", handler) // matches /foo/*starToken
+router.Get("/foo/star*inTheMiddle", handler) // matches /foo/star*inTheMiddle
+router.Get("/foo/starBackslash\\*", handler) // matches /foo/starBackslash\*
+router.Get("/foo/\\\\*backslashWithStar") // matches /foo/\*backslashWithStar
 ```
 
 ### Routing Groups
@@ -104,8 +104,8 @@ To use this you do:
 ```go
 router = httptreemux.New()
 api := router.NewGroup("/api/v1")
-api.GET("/foo", fooHandler) // becomes /api/v1/foo
-api.GET("/bar", barHandler) // becomes /api/v1/bar
+api.Get("/foo", fooHandler) // becomes /api/v1/foo
+api.Get("/bar", barHandler) // becomes /api/v1/bar
 ```
 
 ### Routing Priority
@@ -118,11 +118,11 @@ The priority rules in the router are simple.
 So with the following patterns adapted from [simpleblog](https://www.github.com/dimfeld/simpleblog), we'll see certain matches:
 ```go
 router = httptreemux.New()
-router.GET("/:page", pageHandler)
-router.GET("/:year/:month/:post", postHandler)
-router.GET("/:year/:month", archiveHandler)
-router.GET("/images/*path", staticHandler)
-router.GET("/favicon.ico", staticHandler)
+router.Get("/:page", pageHandler)
+router.Get("/:year/:month/:post", postHandler)
+router.Get("/:year/:month", archiveHandler)
+router.Get("/images/*path", staticHandler)
+router.Get("/favicon.ico", staticHandler)
 ```
 
 #### Example scenarios
@@ -139,7 +139,7 @@ If TreeMux.HeadCanUseGet is set to true, the router will call the GET handler fo
 
 Go's http.ServeContent and related functions already handle the HEAD method correctly by sending only the header, so in most cases your handlers will not need any special cases for it.
 
-By default TreeMux.OptionsHandler is a null handler that doesn't affect your routing. If you set the handler, it will be called on OPTIONS requests to a path already registered by another method. If you set a path specific handler by using `router.OPTIONS`, it will override the global Options Handler for that path.
+By default TreeMux.OptionsHandler is a null handler that doesn't affect your routing. If you set the handler, it will be called on OPTIONS requests to a path already registered by another method. If you set a path specific handler by using `router.Options`, it will override the global Options Handler for that path.
 
 ### Trailing Slashes
 The router has special handling for paths with trailing slashes. If a pattern is added to the router with a trailing slash, any matches on that pattern without a trailing slash will be redirected to the version with the slash. If a pattern does not have a trailing slash, matches on that pattern with a trailing slash will be redirected to the version without.
@@ -151,9 +151,9 @@ One exception to this rule is catch-all patterns. By default, trailing slash red
 
 ```go
 router = httptreemux.New()
-router.GET("/about", pageHandler)
-router.GET("/posts/", postIndexHandler)
-router.POST("/posts", postFormHandler)
+router.Get("/about", pageHandler)
+router.Get("/posts/", postIndexHandler)
+router.Post("/posts", postFormHandler)
 
 GET /about will match normally.
 GET /about/ will redirect to /about.

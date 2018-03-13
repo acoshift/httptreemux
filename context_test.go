@@ -8,13 +8,13 @@ import (
 )
 
 type IContextGroup interface {
-	GET(path string, handler http.HandlerFunc)
-	POST(path string, handler http.HandlerFunc)
-	PUT(path string, handler http.HandlerFunc)
-	PATCH(path string, handler http.HandlerFunc)
-	DELETE(path string, handler http.HandlerFunc)
-	HEAD(path string, handler http.HandlerFunc)
-	OPTIONS(path string, handler http.HandlerFunc)
+	Get(path string, handler http.HandlerFunc)
+	Post(path string, handler http.HandlerFunc)
+	Put(path string, handler http.HandlerFunc)
+	Patch(path string, handler http.HandlerFunc)
+	Delete(path string, handler http.HandlerFunc)
+	Head(path string, handler http.HandlerFunc)
+	Options(path string, handler http.HandlerFunc)
 
 	NewContextGroup(path string) *ContextGroup
 	NewGroup(path string) *ContextGroup
@@ -84,11 +84,11 @@ func testContextGroupMethods(t *testing.T, reqGen RequestCreator, headCanUseGet 
 	}
 
 	cg := rootGroup.NewGroup("/base").NewGroup("/user")
-	cg.GET("/:param", makeHandler("GET"))
-	cg.POST("/:param", makeHandler("POST"))
-	cg.PATCH("/:param", makeHandler("PATCH"))
-	cg.PUT("/:param", makeHandler("PUT"))
-	cg.DELETE("/:param", makeHandler("DELETE"))
+	cg.Get("/:param", makeHandler("GET"))
+	cg.Post("/:param", makeHandler("POST"))
+	cg.Patch("/:param", makeHandler("PATCH"))
+	cg.Put("/:param", makeHandler("PUT"))
+	cg.Delete("/:param", makeHandler("DELETE"))
 
 	testMethod := func(method, expect string) {
 		result = ""
@@ -118,7 +118,7 @@ func testContextGroupMethods(t *testing.T, reqGen RequestCreator, headCanUseGet 
 		testMethod("HEAD", "")
 	}
 
-	cg.HEAD("/:param", makeHandler("HEAD"))
+	cg.Head("/:param", makeHandler("HEAD"))
 	testMethod("HEAD", "HEAD")
 }
 
@@ -126,11 +126,11 @@ func TestNewContextGroup(t *testing.T) {
 	router := New()
 	group := router.NewGroup("/api")
 
-	group.GET("/v1", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	group.Get("/v1", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
 		w.Write([]byte(`200 OK GET /api/v1`))
 	})
 
-	group.UsingContext().GET("/v2", func(w http.ResponseWriter, r *http.Request) {
+	group.UsingContext().Get("/v2", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`200 OK GET /api/v2`))
 	})
 
@@ -208,7 +208,7 @@ func TestDefaultContext(t *testing.T) {
 	ctx := context.WithValue(context.Background(), "abc", "def")
 	expectContext := false
 
-	router.GET("/abc", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	router.Get("/abc", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
 		contextValue := r.Context().Value("abc")
 		if expectContext {
 			x, ok := contextValue.(string)
@@ -242,7 +242,7 @@ func TestContextMuxSimple(t *testing.T) {
 	ctx := context.WithValue(context.Background(), "abc", "def")
 	expectContext := false
 
-	router.GET("/abc", func(w http.ResponseWriter, r *http.Request) {
+	router.Get("/abc", func(w http.ResponseWriter, r *http.Request) {
 		contextValue := r.Context().Value("abc")
 		if expectContext {
 			x, ok := contextValue.(string)
