@@ -1,8 +1,7 @@
-// +build !go1.7
-
 package httptreemux
 
 import (
+	"context"
 	"net/http"
 	"sync"
 )
@@ -74,6 +73,9 @@ type TreeMux struct {
 	// a version passed through URL.EscapedPath. This behavior is disabled by default.
 	EscapeAddedRoutes bool
 
+	// If present, override the default context with this one.
+	DefaultContext context.Context
+
 	// SafeAddRoutesWhileRunning tells the router to protect all accesses to the tree with an RWMutex. This is only needed
 	// if you are going to add routes after the router has already begun serving requests. There is a potential
 	// performance penalty at high load.
@@ -81,6 +83,65 @@ type TreeMux struct {
 }
 
 func (t *TreeMux) setDefaultRequestContext(r *http.Request) *http.Request {
-	// Nothing to do on Go 1.6 and before
+	if t.DefaultContext != nil {
+		r = r.WithContext(t.DefaultContext)
+	}
+
 	return r
+}
+
+type ContextMux struct {
+	*TreeMux
+	*ContextGroup
+}
+
+// NewContextMux returns a TreeMux preconfigured to work with standard http
+// Handler functions and context objects.
+func NewContextMux() *ContextMux {
+	mux := New()
+	cg := mux.UsingContext()
+
+	return &ContextMux{
+		TreeMux:      mux,
+		ContextGroup: cg,
+	}
+}
+
+func (cm *ContextMux) NewGroup(path string) *ContextGroup {
+	return cm.ContextGroup.NewGroup(path)
+}
+
+// GET is convenience method for handling GET requests on a context group.
+func (cm *ContextMux) GET(path string, handler http.HandlerFunc) {
+	cm.ContextGroup.Handle("GET", path, handler)
+}
+
+// POST is convenience method for handling POST requests on a context group.
+func (cm *ContextMux) POST(path string, handler http.HandlerFunc) {
+	cm.ContextGroup.Handle("POST", path, handler)
+}
+
+// PUT is convenience method for handling PUT requests on a context group.
+func (cm *ContextMux) PUT(path string, handler http.HandlerFunc) {
+	cm.ContextGroup.Handle("PUT", path, handler)
+}
+
+// DELETE is convenience method for handling DELETE requests on a context group.
+func (cm *ContextMux) DELETE(path string, handler http.HandlerFunc) {
+	cm.ContextGroup.Handle("DELETE", path, handler)
+}
+
+// PATCH is convenience method for handling PATCH requests on a context group.
+func (cm *ContextMux) PATCH(path string, handler http.HandlerFunc) {
+	cm.ContextGroup.Handle("PATCH", path, handler)
+}
+
+// HEAD is convenience method for handling HEAD requests on a context group.
+func (cm *ContextMux) HEAD(path string, handler http.HandlerFunc) {
+	cm.ContextGroup.Handle("HEAD", path, handler)
+}
+
+// OPTIONS is convenience method for handling OPTIONS requests on a context group.
+func (cm *ContextMux) OPTIONS(path string, handler http.HandlerFunc) {
+	cm.ContextGroup.Handle("OPTIONS", path, handler)
 }
